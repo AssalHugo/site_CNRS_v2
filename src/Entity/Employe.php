@@ -43,6 +43,9 @@ class Employe
     #[ORM\Column(nullable: true)]
     private ?int $annee_naissance = null;
 
+    #[ORM\OneToOne(targetEntity:CompteInfo::class,cascade:["persist"])]
+    private $compteInfo = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -164,6 +167,23 @@ class Employe
     public function setAnneeNaissance(?int $annee_naissance): static
     {
         $this->annee_naissance = $annee_naissance;
+
+        return $this;
+    }
+
+    public function getSyncReseda(): ?string
+    {
+        return $this->syncReseda;
+    }
+
+    public function getCompteInfo(): ?Reference
+    {
+        return $this->compteInfo;
+    }
+
+    public function setCompteInfo(?Reference $compteInfo): static
+    {
+        $this->compteInfo = $compteInfo;
 
         return $this;
     }
