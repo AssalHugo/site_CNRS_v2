@@ -21,6 +21,19 @@ class ContratsRepository extends ServiceEntityRepository
         parent::__construct($registry, Contrats::class);
     }
 
+    public function findLastContrat($idEmploye) : Contrats{
+
+
+        $sql = '
+            SELECT * FROM Contrats c
+            WhERE employe_id = :id
+            ORDER BY c.date_debut DESC
+            LIMIT 1
+            ';
+
+        return $this->executeQuery($sql, ['id' => $idEmploye])[0];
+    }
+
     //    /**
     //     * @return Contrats[] Returns an array of Contrats objects
     //     */
