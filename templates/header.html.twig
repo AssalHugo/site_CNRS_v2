@@ -5,11 +5,39 @@
       </a>
 
       <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="#" class="nav-link px-2 link-secondary">Accueil</a></li>
-        <li><a href="#" class="nav-link px-2 link-dark">User</a></li>
-        <li><a href="#" class="nav-link px-2 link-dark">Groupes</a></li>
-        <li><a href="#" class="nav-link px-2 link-dark">Outils</a></li>
+        <li><a href="{{path('accueil')}}" class="nav-link px-2 link-secondary">Accueil</a></li>
+        <li>
+            <div class="dropdown"> 
+              <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-mdb-toggle="dropdown" aria-expanded="false"> User </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <li><a class="dropdown-item" href="#">Mes informations</a></li>
+                  <li><a class="dropdown-item" href="#">Identifiant numériques</a></li>
+                  <li><a class="dropdown-item" href="#">Contacts secondaires</a></li>
+                  </ul>
+            </div>
+        </li>
+        <li>
+            <div class="dropdown"> 
+              <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-mdb-toggle="dropdown" aria-expanded="false"> Groupes </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <li><a class="dropdown-item" href="#">Modifier</a></li>
+                  <li><a class="dropdown-item" href="#">Liste des utilisateurs</a></li>
+                  </ul>
+            </div>
+        </li>
+        <li>
+            <div class="dropdown"> 
+              <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-mdb-toggle="dropdown" aria-expanded="false"> Outils </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <li><a class="dropdown-item" href="#">Redirection mail</a></li>
+                  <li><a class="dropdown-item" href="#">Trombinoscope</a></li>
+                  <li><a class="dropdown-item" href="#">Formulaire demande compte</a></li>
+                  </ul>
+            </div>
+        </li>
         <li><a href="#" class="nav-link px-2 link-dark">Ressources</a></li>
+        <li><a href="#" class="nav-link px-2 link-dark">R.H.</a></li>
+        <li><a href="#" class="nav-link px-2 link-dark">Admin</a></li>
       </ul>
 
       <div class="col-md-3 text-end">

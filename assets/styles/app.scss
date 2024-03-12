@@ -1,3 +1,11 @@
-body {
-    background-color: lightblue;
+$headings-color: rgb(7,22,73);
+@import "~bootstrap/scss/bootstrap";
+
+.dropdown:hover>.dropdown-menu {
+  display: block;
+}
+
+.dropdown>.dropdown-toggle:active {
+  /*Without this, clicking will make it sticky*/
+    pointer-events: none;
 }
