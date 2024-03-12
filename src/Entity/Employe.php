@@ -3,7 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\EmployeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\User;
+
 
 #[ORM\Entity(repositoryClass: EmployeRepository::class)]
 class Employe
@@ -43,8 +47,17 @@ class Employe
     #[ORM\Column(nullable: true)]
     private ?int $annee_naissance = null;
 
-    #[ORM\OneToOne(targetEntity:CompteInfo::class,cascade:["persist"])]
-    private $compteInfo = null;
+    #[ORM\OneToMany(targetEntity: Contrats::class, mappedBy: 'employe')]
+    private Collection $contrats;
+
+    #[ORM\OneToOne(mappedBy: 'employe', cascade: ['persist', 'remove'])]
+    private ?User $user = null;
+
+
+    public function __construct()
+    {
+        $this->contrats = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -176,14 +189,45 @@ class Employe
         return $this->syncReseda;
     }
 
-    public function getCompteInfo(): ?Reference
+
+    /**
+     * @return Collection<int, Contrats>
+     */
+    public function getContrats(): Collection
     {
-        return $this->compteInfo;
+        return $this->contrats;
     }
 
-    public function setCompteInfo(?Reference $compteInfo): static
+    public function addContrat(Contrats $contrat): static
     {
-        $this->compteInfo = $compteInfo;
+        if (!$this->contrats->contains($contrat)) {
+            $this->contrats->add($contrat);
+            $contrat->setEmploye($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContrat(Contrats $contrat): static
+    {
+        if ($this->contrats->removeElement($contrat)) {
+            // set the owning side to null (unless already changed)
+            if ($contrat->getEmploye() === $this) {
+                $contrat->setEmploye(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

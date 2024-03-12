@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <h1 class="text-center">{{employe.prenom}} {{employe.nom}}</h1>
+        </div>    
+        <div class="col-sm">
+            <img src="employe.photo" class="img-thumbnail" alt="Photo inconnue">
+        </div>
+    </div>
+    </div>
+{% endblock %}
