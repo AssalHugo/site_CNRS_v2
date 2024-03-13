@@ -17,7 +17,7 @@ class AccueilController extends AbstractController
     public function index(EntityManagerInterface $entityManager, Security $security): Response
     {
 
-        $user = $entityManager->getRepository(User::class)->find(3);
+        $user = $entityManager->getRepository(User::class)->find(4);
 
         $security->login($user, CustomAuthenticator::class);
 

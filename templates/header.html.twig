@@ -41,7 +41,11 @@
       </ul>
 
       <div class="col-md-3 text-end">
-        <a href="{{path('app_login')}}" class="btn btn-primary my-2">Se connecter</a>
+        {% if not app.user %}
+          <a href="{{path('app_login')}}" class="btn btn-primary my-2">Se connecter</a>
+        {% else %}
+          <a href="{{path('app_logout')}}" class="btn btn-outline-primary my-2">Se déconnecter</a>
+        {% endif %}
       </div>
     </header>
   </div>

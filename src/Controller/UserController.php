@@ -22,12 +22,12 @@ class UserController extends AbstractController
         $employe = $user->getEmploye();
 
         //On récupere le contrat de l'employé 
-        //$contrat = $entityManager->getRepository(Contrats::class)->findLastContrat($employe->getId());
+        $contrat = $entityManager->getRepository(Contrats::class)->findLastContrat($employe->getId());
 
         return $this->render('user/mesInfo.html.twig', [
             'user' => $user,
             'employe' => $employe,
-            //'contrat' => $contrat,
+            'contrat' => $contrat,
         ]);
     }
 }

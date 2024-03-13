@@ -21,7 +21,10 @@ class ContratsRepository extends ServiceEntityRepository
         parent::__construct($registry, Contrats::class);
     }
 
-    public function findLastContrat($idEmploye) : Contrats{
+    /**
+     * Méthode qui permet de récupérer le dernier contrat de l'employé d'ont l'ID est donné en paramètre
+     */
+    public function findLastContrat($idEmploye) : Contrats | null  {
 
         $entityManager = $this->getEntityManager();
 
@@ -32,6 +35,11 @@ class ContratsRepository extends ServiceEntityRepository
             ';
 
         $query = $entityManager->createQuery($sql)->setParameter('id' , $idEmploye);
+
+        if ($query->getResult() == null ){
+
+            return null;
+        }
 
         return $query->getResult()[0];
     }
