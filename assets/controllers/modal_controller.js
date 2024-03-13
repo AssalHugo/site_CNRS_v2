@@ -1,5 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
-
+import { Modal } from 'bootstrap';
 /*
  * This is an example Stimulus controller!
  *
@@ -10,7 +10,9 @@ import { Controller } from '@hotwired/stimulus';
  * Delete this file or adapt it for your use!
  */
 export default class extends Controller {
-    connect() {
-        this.element.textContent = 'Hello Stimulus! Edit me in assets/controllers/hello_controller.js';
+    static targets = ['modal'];
+    openModal(event) {
+        const modal = new Modal(this.modalTarget);
+        modal.show();
     }
 }

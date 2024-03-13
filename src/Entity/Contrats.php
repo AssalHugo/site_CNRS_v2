@@ -29,7 +29,7 @@ class Contrats
     #[ORM\Column(nullable: true)]
     private ?int $quotite = null;
 
-    #[ORM\OneToOne(targetEntity:Status::class,cascade:["persist"])]
+    #[ORM\ManyToOne(targetEntity:Status::class,cascade:["persist"])]
     private $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'contrats')]

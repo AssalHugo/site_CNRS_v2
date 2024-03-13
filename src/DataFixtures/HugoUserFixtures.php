@@ -8,6 +8,8 @@ use App\Entity\Employe;
 use App\Entity\User;
 use App\Entity\Contrats;
 use App\Entity\Status;
+use App\Entity\Batiments;
+use App\Entity\Localisations;
 
 class HugoUserFixtures extends Fixture
 {
@@ -40,11 +42,31 @@ class HugoUserFixtures extends Fixture
         $contrat->setEmploye($employe);
         $contrat->setStatus($status);
 
+        $contrat2 = new Contrats;
+        $contrat2->setDateDebut(new \DateTime("2017-09-31"));
+        $contrat2->setDateFin(new \DateTime("2018-09-31"));
+        $contrat2->setRemarque("remarque 2");
+        $contrat2->setQuotite(20);
+        $contrat2->setEmploye($employe);
+        $contrat2->setStatus($status);
+
+        $batiment = new Batiments();
+        $batiment->setNom("4");
+
+        $localisation = new Localisations();
+        $localisation->setBureau("bureau 1");
+        $localisation->setBatiment($batiment);
+
+        $employe->addLocalisation($localisation);
+
         
         $manager->persist($user);
         $manager->persist($employe);
         $manager->persist($status);
         $manager->persist($contrat);
+        $manager->persist($contrat2);
+        $manager->persist($batiment);
+        $manager->persist($localisation);
         $manager->flush();
     }
 }

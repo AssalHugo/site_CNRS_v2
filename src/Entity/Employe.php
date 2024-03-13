@@ -53,10 +53,14 @@ class Employe
     #[ORM\OneToOne(mappedBy: 'employe', cascade: ['persist', 'remove'])]
     private ?User $user = null;
 
+    #[ORM\ManyToMany(targetEntity: Localisations::class, inversedBy: 'employes')]
+    private Collection $localisation;
+
 
     public function __construct()
     {
         $this->contrats = new ArrayCollection();
+        $this->localisation = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -228,6 +232,30 @@ class Employe
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Localisations>
+     */
+    public function getLocalisation(): Collection
+    {
+        return $this->localisation;
+    }
+
+    public function addLocalisation(Localisations $localisation): static
+    {
+        if (!$this->localisation->contains($localisation)) {
+            $this->localisation->add($localisation);
+        }
+
+        return $this;
+    }
+
+    public function removeLocalisation(Localisations $localisation): static
+    {
+        $this->localisation->removeElement($localisation);
 
         return $this;
     }
