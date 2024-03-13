@@ -23,15 +23,17 @@ class ContratsRepository extends ServiceEntityRepository
 
     public function findLastContrat($idEmploye) : Contrats{
 
+        $entityManager = $this->getEntityManager();
 
         $sql = '
-            SELECT * FROM Contrats c
-            WhERE employe_id = :id
+            SELECT c FROM App\Entity\Contrats c
+            WhERE c.employe = :id
             ORDER BY c.date_debut DESC
-            LIMIT 1
             ';
 
-        return $this->executeQuery($sql, ['id' => $idEmploye])[0];
+        $query = $entityManager->createQuery($sql)->setParameter('id' , $idEmploye);
+
+        return $query->getResult()[0];
     }
 
     //    /**

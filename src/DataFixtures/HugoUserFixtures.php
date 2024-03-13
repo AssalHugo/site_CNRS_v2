@@ -6,6 +6,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\Employe;
 use App\Entity\User;
+use App\Entity\Contrats;
 
 class HugoUserFixtures extends Fixture
 {
@@ -16,6 +17,8 @@ class HugoUserFixtures extends Fixture
         $user->setUsername("hassal");
         $user->setEmail("hugo@mail.com");
         $user->setPassword("hugo26**");
+        $user->setEmploye($employe);
+
 
         $employe = new Employe();
         $employe->setNom("assal");
@@ -27,7 +30,8 @@ class HugoUserFixtures extends Fixture
         $employe->setTelephoneSecondaire("0101010101");
         $employe->setAnneeNaissance(2024);
         
-        $user->setEmploye($employe);
+        $contrat = new Contrats;
+        contrat->setDateDebut(new \DateTime("2015-09-31"));
 
         $manager->persist($user);
         $manager->persist($employe);
