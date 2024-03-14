@@ -13,7 +13,7 @@ class ContactSuppportType extends AbstractType
     {
         $builder
             ->add('corps', TextareaType::class, [
-                'label' => 'Contacter le support'
+                'label' => ' ',
             ])
         ;
     }

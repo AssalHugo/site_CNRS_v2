@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Form\LocalisationType;
 use App\Form\TelephonesType;
 use App\Form\ContactSuppportType;
+use App\Form\IdentifiantsType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
@@ -163,9 +164,36 @@ class UserController extends AbstractController
         return $this->redirect($this->generateUrl('mesInfos'));
     }
 
-    #[Route('/user/mesInformations/sendEmail', name: 'sendEmail')]
-    public function sendEmail(): Response{
+    #[Route('/user/identidiantsNumeriques', name: 'idNum')]
+    public function identidiantsNumeriques(Request $request, EntityManagerInterface $entityManager): Response{
 
+        //On récupère l'employe qui est connecté
+        $employe = $this->getUser()->getEmploye();
+
+
+        $formIdentifiants = $this->createForm(IdentifiantsType::class, $employe);
+
+        $formIdentifiants->add('valider', SubmitType::class, ['label' => 'Valider']);
+
+        $formIdentifiants->handleRequest($request);
+
+        if($request->isMethod('POST') && $formIdentifiants->isSubmitted() && $formIdentifiants->isValid()){
+
+            $entityManager->persist($employe);
+
+            $entityManager->flush();
+
+            $session = $request->getSession();
+            $session->getFlashBag()->add('message', 'Les identifiants ont bien étés modifiés');
+            $session->set('statut', 'success');
+
+            return $this->redirect($this->generateUrl('idNum'));
+        }
+
+        return $this->render('user/identifiantsNumeriques.html.twig', [
+
+            'formIdentifiants' => $formIdentifiants,
+        ]);
     }
 
 }
