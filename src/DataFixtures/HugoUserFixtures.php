@@ -10,6 +10,7 @@ use App\Entity\Contrats;
 use App\Entity\Status;
 use App\Entity\Batiments;
 use App\Entity\Localisations;
+use App\Entity\Telephones;
 
 class HugoUserFixtures extends Fixture
 {
@@ -66,6 +67,11 @@ class HugoUserFixtures extends Fixture
         $employe->addLocalisation($localisation);
 
         
+        $telephone = new Telephones();
+        $telephone->setNumero("0101010101");
+        $telephone->setEmploye($employe);
+
+        
         $manager->persist($user);
         $manager->persist($employe);
         $manager->persist($status);
@@ -75,6 +81,7 @@ class HugoUserFixtures extends Fixture
         $manager->persist($batiment2);
         $manager->persist($batiment3);
         $manager->persist($localisation);
+        $manager->persist($telephone);
         $manager->flush();
     }
 }

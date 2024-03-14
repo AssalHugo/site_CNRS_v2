@@ -56,11 +56,15 @@ class Employe
     #[ORM\ManyToMany(targetEntity: Localisations::class, inversedBy: 'employes')]
     private Collection $localisation;
 
+    #[ORM\OneToMany(targetEntity: Telephones::class, mappedBy: 'employe')]
+    private Collection $telephones;
+
 
     public function __construct()
     {
         $this->contrats = new ArrayCollection();
         $this->localisation = new ArrayCollection();
+        $this->telephones = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -256,6 +260,36 @@ class Employe
     public function removeLocalisation(Localisations $localisation): static
     {
         $this->localisation->removeElement($localisation);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Telephones>
+     */
+    public function getTelephones(): Collection
+    {
+        return $this->telephones;
+    }
+
+    public function addTelephone(Telephones $telephone): static
+    {
+        if (!$this->telephones->contains($telephone)) {
+            $this->telephones->add($telephone);
+            $telephone->setEmploye($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTelephone(Telephones $telephone): static
+    {
+        if ($this->telephones->removeElement($telephone)) {
+            // set the owning side to null (unless already changed)
+            if ($telephone->getEmploye() === $this) {
+                $telephone->setEmploye(null);
+            }
+        }
 
         return $this;
     }

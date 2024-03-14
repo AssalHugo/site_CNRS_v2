@@ -15,11 +15,12 @@ class LocalisationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('bureau')
             ->add('batiment', EntityType::class, [
                 'class' => Batiments::class,
-                'choice_label' => 'id',
+                'choice_label' => 'nom',
+                'label' => 'Batiment : '
             ])
+            ->add('bureau')
         ;
     }
 
