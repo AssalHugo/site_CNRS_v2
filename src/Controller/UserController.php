@@ -9,13 +9,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Contrats;
 use App\Entity\Localisations;
 use Symfony\Component\HttpFoundation\Request;
+use App\Form\LocalisationType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 
 
 class UserController extends AbstractController
 {
     #[Route('/user/mesInformations', name: 'mesInfos')]
-    public function mesInformations(EntityManagerInterface $entityManager): Response {
+    public function mesInformations(Request $request, EntityManagerInterface $entityManager): Response {
 
         //On récupère le User connecté
         $user = $this->getUser();
@@ -31,12 +33,36 @@ class UserController extends AbstractController
 
         $localisations = $employe->getLocalisation();
 
+        $localisation = new Localisations();
+        $formLocalisation = $this->createForm(LocalisationType::class,$localisation);
+
+        $formLocalisation->add('creer', SubmitType::class, ['label' => '+', 'validation_groups' => ['registration','all']]);
+
+        $formLocalisation->handleRequest($request);
+
+        if($request->isMethod('POST') && $formLocalisation->isValid()){
+
+
+            $employe->addLocalisation($localisation);
+
+            $entityManager->persist($localisation);
+
+            $entityManager->flush();
+
+            $session = $request->getSession();
+            $session->getFlashBag()->add('message', 'Une nouvelle localisation a été ajouté');
+            $session->set('statut', 'success');
+
+            return $this->redirect($this->generateUrl('mesInfos'));
+        }
+
         return $this->render('user/mesInfo.html.twig', [
             'user' => $user,
             'employe' => $employe,
             'contrat' => $contrat,
             'contrats' => $contrats,
             'localisations' => $localisations,
+            'formLocalisation' => $formLocalisation->createView(),
         ]);
     }
 
@@ -58,6 +84,32 @@ class UserController extends AbstractController
     #[Route('/user/mesInformations/addLocalisation', name: 'addLocalisation')]
     public function addLocalisation(Request $request, EntityManagerInterface $entityManager): Response{
 
-        
+        $localisation = new Localisations();
+        $formLocalisation = $this->createForm(LocalisationType::class,$localisation);
+
+        $formLocalisation->add('creer', SubmitType::class, ['label' => '+', 'validation_groups' => ['registration','all']]);
+
+        $formLocalisation->handleRequest($request);
+
+        if($request->isMethod('POST') && $formLocalisation->isValid()){
+
+            $file = $formLocalisation['lienImage']->getData();
+
+            //si une image est donnée
+            if (!is_string($file)){
+
+                $entityManager->persist($localisation);
+
+                $entityManager->flush();
+
+                $session = $request->getSession();
+                $session->getFlashBag()->add('message', 'Une nouvelle localisation a été ajouté');
+                $session->set('statut', 'success');
+
+                return $this->redirect($this->generateUrl('mesInfos'));
+            }
+        }
+
+        return $this->render('user/mesInfo.html.twig', ['formLocalisation' => $formLocalisation->createView()]);
     }
 }

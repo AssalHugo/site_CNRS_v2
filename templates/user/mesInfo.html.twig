@@ -79,8 +79,7 @@
                         {% set i = i + 1 %}
                     {% endfor %}
                     <li class="list-group-item">
-                        
-                        <a class="btn btn-success my-2" href="{{path('addLocalisation')}}" >+</a>
+                        {{form(formLocalisation)}}
                     </li>    
                 </ul>    
            </div>

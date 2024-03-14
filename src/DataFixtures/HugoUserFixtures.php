@@ -53,6 +53,12 @@ class HugoUserFixtures extends Fixture
         $batiment = new Batiments();
         $batiment->setNom("4");
 
+        $batiment2 = new Batiments();
+        $batiment2->setNom("26");
+
+        $batiment3 = new Batiments();
+        $batiment3->setNom("48");
+
         $localisation = new Localisations();
         $localisation->setBureau("bureau 1");
         $localisation->setBatiment($batiment);
@@ -66,6 +72,8 @@ class HugoUserFixtures extends Fixture
         $manager->persist($contrat);
         $manager->persist($contrat2);
         $manager->persist($batiment);
+        $manager->persist($batiment2);
+        $manager->persist($batiment3);
         $manager->persist($localisation);
         $manager->flush();
     }
