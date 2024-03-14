@@ -73,8 +73,9 @@
                     {% for localisation in localisations %}
                         <li class="list-group-item">
                             Localisation {{i}} : <a class="btn btn-warning my-2" href="{{path('removeLocalisation', {id: localisation.id})}}" >&#128465;&#65039;</a>
-                            <p>&nbsp;&nbsp;&nbsp;Batiment : {{localisation.batiment.nom}}</p>
-                            <p>&nbsp;&nbsp;&nbsp;Bureau : {{localisation.bureau}}</p>
+                            </br>
+                            <b>&nbsp;&nbsp;&nbsp;Batiment : {{localisation.batiment.nom}}</b>
+                            <b>&nbsp;&nbsp;&nbsp;Bureau : {{localisation.bureau}}</b>
                         </li>
                         {% set i = i + 1 %}
                     {% endfor %}
@@ -84,7 +85,31 @@
                 </ul>    
            </div>
         </div>
-
+        <div class="row">
+            <h5 class="text-left">Téléphones : </h5>
+            <div class="col-sm">
+                <ul class="list-group">
+                    {% set i = 1 %}
+                    {% for telephone in telephones %}
+                        <li class="list-group-item">
+                            Telephone {{i}} : <a class="btn btn-warning my-2" href="{{path('removeTelephone', {id: telephone.id})}}" >&#128465;&#65039;</a>
+                            </br>
+                            <b>&nbsp;&nbsp;&nbsp;Numéro de téléphone : {{telephone.numero}}</b>
+                        </li>
+                        {% set i = i + 1 %}
+                    {% endfor %}
+                    <li class="list-group-item">
+                        {{form(formTelephone)}}
+                    </li>
+                </ul>
+           </div>
+        </div>
+        <div class="row">
+            <h5 class="text-left">Téléphones : </h5>
+            <div class="col-sm">
+                {{form(formContact)}}
+            </div>
+        </div>      
     </div>
 
 {% endblock %}

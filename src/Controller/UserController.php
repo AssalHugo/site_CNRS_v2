@@ -8,16 +8,21 @@ use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Contrats;
 use App\Entity\Localisations;
+use App\Entity\Telephones;
 use Symfony\Component\HttpFoundation\Request;
 use App\Form\LocalisationType;
+use App\Form\TelephonesType;
+use App\Form\ContactSuppportType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 
 
 
 class UserController extends AbstractController
 {
     #[Route('/user/mesInformations', name: 'mesInfos')]
-    public function mesInformations(Request $request, EntityManagerInterface $entityManager): Response {
+    public function mesInformations(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer): Response {
 
         //On récupère le User connecté
         $user = $this->getUser();
@@ -31,10 +36,87 @@ class UserController extends AbstractController
         //On récupere tous les contrats de l'employe
         $contrats = $employe->getContrats();
 
+        //On récupere les localisations de l'employe
         $localisations = $employe->getLocalisation();
 
-        //On appele la fonction plus bas qui va créer le formulaire pour ajouter une localisation
-        $formLocalisation = $this->addLocalisation($request, $entityManager);
+        //On récupere les numéros de téléphones de l'employe
+        $telephones = $employe->getTelephones();
+
+
+        //Partie localisation
+        $localisation = new Localisations();
+        $formLocalisation = $this->createForm(LocalisationType::class,$localisation);
+
+        $formLocalisation->add('creer', SubmitType::class, ['label' => '+']);
+
+        $formLocalisation->handleRequest($request);
+
+        if($request->isMethod('POST') && $formLocalisation->isSubmitted() && $formLocalisation->isValid()){
+
+
+            $employe->addLocalisation($localisation);
+
+            $entityManager->persist($localisation);
+
+            $entityManager->flush();
+
+            $session = $request->getSession();
+            $session->getFlashBag()->add('message', 'Une nouvelle localisation a été ajouté');
+            $session->set('statut', 'success');
+
+            return $this->redirect($this->generateUrl('mesInfos'));
+        }
+
+        //-----Partie Telephone-----
+        $telephone = new Telephones();
+        $formTelephone = $this->createForm(TelephonesType::class,$telephone);
+
+        $formTelephone->add('creer', SubmitType::class, ['label' => '+']);
+
+        $formTelephone->handleRequest($request);
+
+        if($request->isMethod('POST') && $formTelephone->isSubmitted() && $formTelephone->isValid()){
+
+
+            $employe->addTelephone($telephone);
+
+            $entityManager->persist($telephone);
+
+            $entityManager->flush();
+
+            $session = $request->getSession();
+            $session->getFlashBag()->add('message', 'Un nouveau téléphone a été ajouté');
+            $session->set('statut', 'success');
+
+            return $this->redirect($this->generateUrl('mesInfos'));
+        }
+
+
+        //----Partie contact support----
+        $formContact = $this->createForm(ContactSuppportType::class);
+
+        $formContact->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
+
+        $formContact->handleRequest($request);
+
+        if($request->isMethod('POST') && $formContact->isSubmitted() && $formContact->isValid()){
+
+            $email = (new Email())
+            ->from('hello@example.com')
+            ->to('you@example.com')
+            ->subject('Time for Symfony Mailer!')
+            ->text('Sending emails is fun again!')
+            ->html('<p>See Twig integration for better HTML integration!</p>');
+
+        $mailer->send($email);
+
+            $session = $request->getSession();
+            $session->getFlashBag()->add('message', 'Le message a bien été envoyé');
+            $session->set('statut', 'success');
+
+            return $this->redirect($this->generateUrl('mesInfos'));
+        }
+        
 
         //On renvoie vers le template accompagné de certaines valeurs
         return $this->render('user/mesInfo.html.twig', [
@@ -44,6 +126,9 @@ class UserController extends AbstractController
             'contrats' => $contrats,
             'localisations' => $localisations,
             'formLocalisation' => $formLocalisation->createView(),
+            'formTelephone' => $formTelephone->createView(),
+            'formContact' => $formContact->createView(),
+            'telephones' => $telephones,
         ]);
     }
 
@@ -62,31 +147,25 @@ class UserController extends AbstractController
         return $this->redirect($this->generateUrl('mesInfos'));
     }
 
-    private function addLocalisation(Request $request, EntityManagerInterface $entityManager): mixed{
 
-        $localisation = new Localisations();
-        $formLocalisation = $this->createForm(LocalisationType::class,$localisation);
+    #[Route('/user/mesInformations/removeTelephone/{id}', name: 'removeTelephone')]
+    public function removeTelephone(Request $request, EntityManagerInterface $entityManager, int $id): Response{
 
-        $formLocalisation->add('creer', SubmitType::class, ['label' => '+', 'validation_groups' => ['registration','all']]);
+        $teleRepo = $entityManager->getRepository(Telephones::class);
+        $telephone = $teleRepo->find($id);
+        $entityManager->remove($telephone);
+        $entityManager->flush();
 
-        $formLocalisation->handleRequest($request);
+        $session = $request->getSession();
+        $session->getFlashBag()->add('message', 'Le téléphone a été supprimé');
+        $session->set('statut', 'success');
 
-        if($request->isMethod('POST') && $formLocalisation->isValid()){
-
-
-            $employe->addLocalisation($localisation);
-
-            $entityManager->persist($localisation);
-
-            $entityManager->flush();
-
-            $session = $request->getSession();
-            $session->getFlashBag()->add('message', 'Une nouvelle localisation a été ajouté');
-            $session->set('statut', 'success');
-
-            return $this->redirect($this->generateUrl('mesInfos'));
-        }
-
-        return $formLocalisation;
+        return $this->redirect($this->generateUrl('mesInfos'));
     }
+
+    #[Route('/user/mesInformations/sendEmail', name: 'sendEmail')]
+    public function sendEmail(): Response{
+
+    }
+
 }
