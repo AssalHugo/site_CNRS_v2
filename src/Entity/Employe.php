@@ -32,11 +32,11 @@ class Employe
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $page_pro = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $idhal = null;
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $idhal = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $orcid = null;
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $orcid = null;
 
     #[ORM\Column(length: 128, nullable: true)]
     private ?string $mail_secondaire = null;
@@ -132,24 +132,24 @@ class Employe
         return $this;
     }
 
-    public function getIdhal(): ?int
+    public function getIdhal(): ?string
     {
         return $this->idhal;
     }
 
-    public function setIdhal(?int $idhal): static
+    public function setIdhal(?string $idhal): static
     {
         $this->idhal = $idhal;
 
         return $this;
     }
 
-    public function getOrcid(): ?int
+    public function getOrcid(): ?string
     {
         return $this->orcid;
     }
 
-    public function setOrcid(?int $orcid): static
+    public function setOrcid(?string $orcid): static
     {
         $this->orcid = $orcid;
 

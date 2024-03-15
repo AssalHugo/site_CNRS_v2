@@ -17,7 +17,7 @@ use App\Form\IdentifiantsType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
-
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 
 class UserController extends AbstractController
@@ -164,8 +164,8 @@ class UserController extends AbstractController
         return $this->redirect($this->generateUrl('mesInfos'));
     }
 
-    #[Route('/user/identidiantsNumeriques', name: 'idNum')]
-    public function identidiantsNumeriques(Request $request, EntityManagerInterface $entityManager): Response{
+    #[Route('/user/identifiantsNumeriques', name: 'idNum')]
+    public function identidiantsNumeriques(Request $request, EntityManagerInterface $entityManager, HttpClientInterface $client): Response{
 
         //On récupère l'employe qui est connecté
         $employe = $this->getUser()->getEmploye();
@@ -189,6 +189,22 @@ class UserController extends AbstractController
 
             return $this->redirect($this->generateUrl('idNum'));
         }
+
+
+        //Partie test publication
+        $idhal = $employe->getIdhal();
+        $orcid = $employe->getOrcid();
+
+
+        $response = $client->request(
+            'GET',
+            "https://api.archives-ouvertes.fr/search/?fq=authIdHal_s:{$idhal}%20OR%20authOrcidIdExt_id:{$orcid}"
+        );
+
+        $content = $response->getContent();
+
+
+        echo $content;
 
         return $this->render('user/identifiantsNumeriques.html.twig', [
 

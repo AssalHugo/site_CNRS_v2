@@ -21,7 +21,8 @@ class HugoUserFixtures extends Fixture
         $employe->setPrenom("hugo");
         $employe->setSyncReseda(true);
         $employe->setPagePro("page");
-        $employe->setIdhal(1);
+        $employe->setIdhal("sebastien-geiger");
+        $employe->setOrcid("0000-0003-1412-9991");
         $employe->setMailSecondaire("hugo2@mail.com");
         $employe->setTelephoneSecondaire("0101010101");
         $employe->setAnneeNaissance(2024);
