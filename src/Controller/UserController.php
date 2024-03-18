@@ -14,11 +14,12 @@ use App\Form\LocalisationType;
 use App\Form\TelephonesType;
 use App\Form\ContactSuppportType;
 use App\Form\IdentifiantsType;
+use App\Form\TestPublicationType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-
+use App\Form\ContactSecondairesType;
 
 class UserController extends AbstractController
 {
@@ -164,6 +165,7 @@ class UserController extends AbstractController
         return $this->redirect($this->generateUrl('mesInfos'));
     }
 
+
     #[Route('/user/identifiantsNumeriques', name: 'idNum')]
     public function identidiantsNumeriques(Request $request, EntityManagerInterface $entityManager, HttpClientInterface $client): Response{
 
@@ -192,24 +194,106 @@ class UserController extends AbstractController
 
 
         //Partie test publication
-        $idhal = $employe->getIdhal();
-        $orcid = $employe->getOrcid();
+        $formTest = $this->createForm(TestPublicationType::class);
 
+        $formTest->add('tester', SubmitType::class, ['label' => 'Tester']);
 
-        $response = $client->request(
-            'GET',
-            "https://api.archives-ouvertes.fr/search/?fq=authIdHal_s:{$idhal}%20OR%20authOrcidIdExt_id:{$orcid}"
-        );
+        $formTest->handleRequest($request);
 
-        $content = $response->getContent();
+        $content = "";
 
+        if($request->isMethod('POST') && $formTest->isSubmitted() && $formTest->isValid()){
 
-        echo $content;
+            $content = "<h6> Listes des publications : </h6>";
+
+            $data = $formTest->getData();
+
+            $q = "";
+
+            if ($data["idhal"] && $data["orcid"] ){
+
+                $idhal = $employe->getIdhal();
+                $orcid = $employe->getOrcid();
+
+                $q = "authIdHal_s:" . $idhal . "%20OR%20authOrcidIdExt_id:" . $orcid;
+            }
+            else if ($data["idhal"] && !$data["orcid"] ){
+
+                $idhal = $employe->getIdhal();
+                $q = "authIdHal_s:" . $idhal;
+            }
+            else if (!$data["idhal"] && $data["orcid"]){
+
+                $orcid = $employe->getOrcid();
+
+                $q = $orcid;
+            }
+            else {//Si aucune cases n'est cochés on affiche la page
+
+                return $this->render('user/identifiantsNumeriques.html.twig', [
+
+                    'formIdentifiants' => $formIdentifiants,
+                    'formTest' => $formTest,
+                    'content' => "",
+                ]);
+            }
+        
+            $response = $client->request(
+                'GET',
+                "https://api.archives-ouvertes.fr/search/?fq=(+{$q}+)"
+            );;
+
+            $tabResponse = $response->toArray();
+
+            $tabResponse = $tabResponse["response"]["docs"];
+
+            foreach ($tabResponse as $key){
+                if (isset($key["label_s"]) && isset($key["uri_s"])){
+
+                    $content .= "<a href='" . $key["uri_s"] . "' target='_BLANK'>" . $key["label_s"] . "</a> </br> </br>";
+                }
+            }
+        }
 
         return $this->render('user/identifiantsNumeriques.html.twig', [
 
             'formIdentifiants' => $formIdentifiants,
+            'formTest' => $formTest,
+            'content' => $content,
         ]);
     }
+
+    #[Route('/user/contactSecondaires', name: 'contacts')]
+    public function contactSecondaires(Request $request, EntityManagerInterface $entityManager) : Response{
+
+        //On récupère l'employe qui est connecté
+        $employe = $this->getUser()->getEmploye();
+
+        $formContacts = $this->createForm(ContactSecondairesType::class, $employe);
+
+        $formContacts->add('valider', SubmitType::class, ['label' => 'Valider']);
+
+        $formContacts->handleRequest($request);
+
+        if($request->isMethod('POST') && $formContacts->isSubmitted() && $formContacts->isValid()){
+
+            $entityManager->persist($employe);
+
+            $entityManager->flush();
+
+            $session = $request->getSession();
+            $session->getFlashBag()->add('message', 'Les contacts secondaires ont bien étés modifiés');
+            $session->set('statut', 'success');
+
+            return $this->redirect($this->generateUrl('contacts'));
+        }
+
+        return $this->render('user/ContatcSecondaires.html.twig', [
+
+            'formContacts' => $formContacts,
+        ]);
+    }
+    
+    
 
 }

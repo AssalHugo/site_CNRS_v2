@@ -59,12 +59,27 @@ class Employe
     #[ORM\OneToMany(targetEntity: Telephones::class, mappedBy: 'employe')]
     private Collection $telephones;
 
+    #[ORM\OneToOne(mappedBy: 'responsable', cascade: ['persist', 'remove'])]
+    private ?Groupes $responsableDe = null;
+
+    #[ORM\ManyToMany(targetEntity: Groupes::class, mappedBy: 'adjoints')]
+    private Collection $adjoints;
+
+    #[ORM\OneToOne(inversedBy: 'employe', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Groupes $groupe_principal = null;
+
+    #[ORM\ManyToMany(targetEntity: Groupes::class, inversedBy: 'employes')]
+    private Collection $groupes_secondaires;
+
 
     public function __construct()
     {
         $this->contrats = new ArrayCollection();
         $this->localisation = new ArrayCollection();
         $this->telephones = new ArrayCollection();
+        $this->adjoints = new ArrayCollection();
+        $this->groupes_secondaires = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -290,6 +305,86 @@ class Employe
                 $telephone->setEmploye(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getGroupes(): ?Groupes
+    {
+        return $this->groupes;
+    }
+
+    public function setGroupes(Groupes $groupes): static
+    {
+        // set the owning side of the relation if necessary
+        if ($groupes->getResponsable() !== $this) {
+            $groupes->setResponsable($this);
+        }
+
+        $this->groupes = $groupes;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Groupes>
+     */
+    public function getAdjoints(): Collection
+    {
+        return $this->adjoints;
+    }
+
+    public function addAdjoint(Groupes $adjoint): static
+    {
+        if (!$this->adjoints->contains($adjoint)) {
+            $this->adjoints->add($adjoint);
+            $adjoint->addAdjoint($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAdjoint(Groupes $adjoint): static
+    {
+        if ($this->adjoints->removeElement($adjoint)) {
+            $adjoint->removeAdjoint($this);
+        }
+
+        return $this;
+    }
+
+    public function getGroupePrincipal(): ?Groupes
+    {
+        return $this->groupe_principal;
+    }
+
+    public function setGroupePrincipal(Groupes $groupe_principal): static
+    {
+        $this->groupe_principal = $groupe_principal;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Groupes>
+     */
+    public function getGroupesSecondaires(): Collection
+    {
+        return $this->groupes_secondaires;
+    }
+
+    public function addGroupesSecondaire(Groupes $groupesSecondaire): static
+    {
+        if (!$this->groupes_secondaires->contains($groupesSecondaire)) {
+            $this->groupes_secondaires->add($groupesSecondaire);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupesSecondaire(Groupes $groupesSecondaire): static
+    {
+        $this->groupes_secondaires->removeElement($groupesSecondaire);
 
         return $this;
     }
