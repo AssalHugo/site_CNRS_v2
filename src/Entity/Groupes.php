@@ -21,26 +21,23 @@ class Groupes
     #[ORM\Column(length: 8, nullable: true)]
     private ?string $acronyme = null;
 
-    #[ORM\OneToOne(inversedBy: 'groupes', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Employe $responsable = null;
-
-    #[ORM\ManyToMany(targetEntity: Employe::class, inversedBy: 'adjoints')]
-    private Collection $adjoints;
-
     #[ORM\Column(length: 34)]
     private ?string $statut = null;
 
-    #[ORM\OneToOne(mappedBy: 'groupe_principal', cascade: ['persist', 'remove'])]
-    private ?Employe $employe = null;
+    #[ORM\OneToOne(inversedBy: 'reponsable_de', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Employe $responsable = null;
+
+    #[ORM\ManyToMany(targetEntity: Employe::class, inversedBy: 'adjoint_de')]
+    private Collection $adjoints;
 
     #[ORM\ManyToMany(targetEntity: Employe::class, mappedBy: 'groupes_secondaires')]
-    private Collection $employes;
+    private Collection $employe_grp_secondaires;
 
     public function __construct()
     {
         $this->adjoints = new ArrayCollection();
-        $this->employes = new ArrayCollection();
+        $this->employe_grp_secondaires = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -68,6 +65,18 @@ class Groupes
     public function setAcronyme(?string $acronyme): static
     {
         $this->acronyme = $acronyme;
+
+        return $this;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(string $statut): static
+    {
+        $this->statut = $statut;
 
         return $this;
     }
@@ -108,57 +117,28 @@ class Groupes
         return $this;
     }
 
-    public function getStatut(): ?string
-    {
-        return $this->statut;
-    }
-
-    public function setStatut(string $statut): static
-    {
-        $this->statut = $statut;
-
-        return $this;
-    }
-
-    public function getEmploye(): ?Employe
-    {
-        return $this->employe;
-    }
-
-    public function setEmploye(Employe $employe): static
-    {
-        // set the owning side of the relation if necessary
-        if ($employe->getGroupePrincipal() !== $this) {
-            $employe->setGroupePrincipal($this);
-        }
-
-        $this->employe = $employe;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Employe>
      */
-    public function getEmployes(): Collection
+    public function getEmployeGrpSecondaires(): Collection
     {
-        return $this->employes;
+        return $this->employe_grp_secondaires;
     }
 
-    public function addEmploye(Employe $employe): static
+    public function addEmployeGrpSecondaire(Employe $employeGrpSecondaire): static
     {
-        if (!$this->employes->contains($employe)) {
-            $this->employes->add($employe);
-            $employe->addGroupesSecondaire($this);
+        if (!$this->employe_grp_secondaires->contains($employeGrpSecondaire)) {
+            $this->employe_grp_secondaires->add($employeGrpSecondaire);
+            $employeGrpSecondaire->addGroupesSecondaire($this);
         }
 
         return $this;
     }
 
-    public function removeEmploye(Employe $employe): static
+    public function removeEmployeGrpSecondaire(Employe $employeGrpSecondaire): static
     {
-        if ($this->employes->removeElement($employe)) {
-            $employe->removeGroupesSecondaire($this);
+        if ($this->employe_grp_secondaires->removeElement($employeGrpSecondaire)) {
+            $employeGrpSecondaire->removeGroupesSecondaire($this);
         }
 
         return $this;

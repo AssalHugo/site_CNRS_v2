@@ -11,6 +11,7 @@ use App\Entity\Status;
 use App\Entity\Batiments;
 use App\Entity\Localisations;
 use App\Entity\Telephones;
+use App\Entity\Groupes;
 
 class HugoUserFixtures extends Fixture
 {
@@ -72,6 +73,19 @@ class HugoUserFixtures extends Fixture
         $telephone->setNumero("0101010101");
         $telephone->setEmploye($employe);
 
+
+        $groupe = new Groupes();
+        $groupe->setNom("groupe 1");
+        $groupe->setAcronyme("Grp1");
+        $groupe->setStatut("statut");
+        
+
+        $groupe->setResponsable($employe);
+        
+        $manager->persist($user);
+        $manager->persist($employe);
+        $manager->persist($groupe);
+        
         
         $manager->persist($user);
         $manager->persist($employe);
@@ -83,6 +97,11 @@ class HugoUserFixtures extends Fixture
         $manager->persist($batiment3);
         $manager->persist($localisation);
         $manager->persist($telephone);
+        $manager->persist($groupe);
+        $manager->flush();
+
+        $employe->setGroupePrincipal($groupe);
+        $manager->persist($employe);
         $manager->flush();
     }
 }

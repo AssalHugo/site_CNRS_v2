@@ -60,16 +60,15 @@ class Employe
     private Collection $telephones;
 
     #[ORM\OneToOne(mappedBy: 'responsable', cascade: ['persist', 'remove'])]
-    private ?Groupes $responsableDe = null;
+    private ?Groupes $reponsable_de = null;
 
     #[ORM\ManyToMany(targetEntity: Groupes::class, mappedBy: 'adjoints')]
-    private Collection $adjoints;
+    private Collection $adjoint_de;
 
-    #[ORM\OneToOne(inversedBy: 'employe', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Groupes $groupe_principal = null;
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Groupes $groupe_principal;
 
-    #[ORM\ManyToMany(targetEntity: Groupes::class, inversedBy: 'employes')]
+    #[ORM\ManyToMany(targetEntity: Groupes::class, inversedBy: 'employe_grp_secondaires')]
     private Collection $groupes_secondaires;
 
 
@@ -78,7 +77,7 @@ class Employe
         $this->contrats = new ArrayCollection();
         $this->localisation = new ArrayCollection();
         $this->telephones = new ArrayCollection();
-        $this->adjoints = new ArrayCollection();
+        $this->adjoint_de = new ArrayCollection();
         $this->groupes_secondaires = new ArrayCollection();
     }
 
@@ -309,19 +308,19 @@ class Employe
         return $this;
     }
 
-    public function getGroupes(): ?Groupes
+    public function getReponsableDe(): ?Groupes
     {
-        return $this->groupes;
+        return $this->reponsable_de;
     }
 
-    public function setGroupes(Groupes $groupes): static
+    public function setReponsableDe(Groupes $reponsable_de): static
     {
         // set the owning side of the relation if necessary
-        if ($groupes->getResponsable() !== $this) {
-            $groupes->setResponsable($this);
+        if ($reponsable_de->getResponsable() !== $this) {
+            $reponsable_de->setResponsable($this);
         }
 
-        $this->groupes = $groupes;
+        $this->reponsable_de = $reponsable_de;
 
         return $this;
     }
@@ -329,25 +328,25 @@ class Employe
     /**
      * @return Collection<int, Groupes>
      */
-    public function getAdjoints(): Collection
+    public function getAdjointDe(): Collection
     {
-        return $this->adjoints;
+        return $this->adjoint_de;
     }
 
-    public function addAdjoint(Groupes $adjoint): static
+    public function addAdjointDe(Groupes $adjointDe): static
     {
-        if (!$this->adjoints->contains($adjoint)) {
-            $this->adjoints->add($adjoint);
-            $adjoint->addAdjoint($this);
+        if (!$this->adjoint_de->contains($adjointDe)) {
+            $this->adjoint_de->add($adjointDe);
+            $adjointDe->addAdjoint($this);
         }
 
         return $this;
     }
 
-    public function removeAdjoint(Groupes $adjoint): static
+    public function removeAdjointDe(Groupes $adjointDe): static
     {
-        if ($this->adjoints->removeElement($adjoint)) {
-            $adjoint->removeAdjoint($this);
+        if ($this->adjoint_de->removeElement($adjointDe)) {
+            $adjointDe->removeAdjoint($this);
         }
 
         return $this;
